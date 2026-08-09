@@ -126,24 +126,8 @@ body.has-pointer .cursor-glow {
 
 .brand-mark {
   width: 28px;
-  height: 28px;
-  color: var(--teal);
-}
-
-.mark-accent {
-  fill: var(--red);
-  transform-origin: center;
-  animation: accent-pulse 3.6s var(--ease) infinite;
-}
-
-@keyframes accent-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.08);
-  }
+  height: auto;
+  flex-shrink: 0;
 }
 
 .brand-text,
