@@ -13,7 +13,7 @@ function $$(sel, root = document) {
   return [...root.querySelectorAll(sel)];
 }
 
-/* ── Canvas architectural hero (DIKER-inspired) ────────────── */
+/* ── Canvas logo hero ──────────────────────────────────────── */
 function setupHeroCanvas() {
   const canvas = $("[data-hero-canvas]");
   if (!canvas) return { flash: () => {} };
@@ -25,18 +25,20 @@ function setupHeroCanvas() {
   let t0 = performance.now();
   let pointer = { x: 0, y: 0 };
   let flashUntil = 0;
+  /** @type {HTMLImageElement | null} */
+  let logo = null;
+  let logoReady = false;
 
-  const ROWS = 7;
-  const COLS = 4;
-
-  /** @type {{side:'L'|'R', row:number, col:number, accent:null|'teal'|'red', pulse:number}[]} */
-  let windows = [];
-
-  const accentPlan = [
-    { side: "L", row: 2, col: 1, accent: "teal" },
-    { side: "R", row: 1, col: 2, accent: "teal" },
-    { side: "R", row: 3, col: 0, accent: "red" },
-  ];
+  function loadLogo() {
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = () => {
+      logo = img;
+      logoReady = true;
+      if (prefersReduced) requestAnimationFrame(draw);
+    };
+    img.src = "assets/logo-mark.png";
+  }
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
@@ -46,75 +48,6 @@ function setupHeroCanvas() {
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    buildWindowGrid();
-  }
-
-  function buildWindowGrid() {
-    windows = [];
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        for (const side of /** @type {const} */ (["L", "R"])) {
-          const match = accentPlan.find((a) => a.side === side && a.row === row && a.col === col);
-          windows.push({
-            side,
-            row,
-            col,
-            accent: match ? match.accent : null,
-            pulse: Math.random() * Math.PI * 2,
-          });
-        }
-      }
-    }
-  }
-
-  /** Map face UV (u across, v down) → screen point on a triangular facade */
-  function facePoint(side, u, v, peakX, peakY, leftX, rightX, baseY) {
-    const edgeX = side === "L" ? leftX : rightX;
-    // At depth v, the face spans from peakX to edge along the base line
-    const xAtEdge = peakX + (edgeX - peakX) * v;
-    const y = peakY + (baseY - peakY) * v;
-    // u=0 at corner seam, u=1 at outer edge
-    const x = peakX + (xAtEdge - peakX) * u;
-    return { x, y };
-  }
-
-  function drawArchAt(cx, cy, ww, hh, fill, reveal, skew) {
-    ctx.save();
-    ctx.globalAlpha = reveal;
-    ctx.translate(cx, cy);
-    ctx.transform(1, 0, skew, 1, 0, 0);
-
-    const x = -ww / 2;
-    const y = -hh * 0.15;
-    const r = ww * 0.5;
-
-    // Recess lip
-    ctx.beginPath();
-    ctx.moveTo(x - 3, y + hh + 3);
-    ctx.lineTo(x - 3, y + r);
-    ctx.arc(0, y + r, ww / 2 + 3, Math.PI, 0, false);
-    ctx.lineTo(x + ww + 3, y + hh + 3);
-    ctx.closePath();
-    ctx.fillStyle = "rgba(200,206,216,0.7)";
-    ctx.fill();
-
-    // Opening
-    ctx.beginPath();
-    ctx.moveTo(x, y + hh);
-    ctx.lineTo(x, y + r);
-    ctx.arc(0, y + r, ww / 2, Math.PI, 0, false);
-    ctx.lineTo(x + ww, y + hh);
-    ctx.closePath();
-    ctx.fillStyle = fill;
-    ctx.fill();
-
-    const shade = ctx.createLinearGradient(x, y, x + ww, y + hh);
-    shade.addColorStop(0, "rgba(255,255,255,0.1)");
-    shade.addColorStop(0.5, "rgba(0,0,0,0)");
-    shade.addColorStop(1, "rgba(0,0,0,0.35)");
-    ctx.fillStyle = shade;
-    ctx.fill();
-    ctx.restore();
   }
 
   function draw(now) {
@@ -122,10 +55,11 @@ function setupHeroCanvas() {
     const intro = prefersReduced ? 1 : Math.min(1, elapsed / 1.4);
     const ease = 1 - Math.pow(1 - intro, 3);
     const flashing = now < flashUntil;
+    const flashT = flashing ? Math.max(0, (flashUntil - now) / 700) : 0;
 
     ctx.clearRect(0, 0, w, h);
 
-    // Overcast sky
+    // Overcast sky (same atmosphere as before)
     const sky = ctx.createLinearGradient(0, 0, 0, h);
     sky.addColorStop(0, "#b9c1cd");
     sky.addColorStop(0.45, "#c5ccd6");
@@ -133,125 +67,78 @@ function setupHeroCanvas() {
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, w, h);
 
-    const peakX = w * 0.5 + pointer.x * 12;
-    const peakY = h * (0.1 + (1 - ease) * 0.1) + pointer.y * 8;
-    const leftX = -w * 0.08;
-    const rightX = w * 1.08;
-    const baseY = h * 1.05;
-
-    ctx.save();
-    ctx.translate(0, (1 - ease) * h * 0.1);
-
-    // Left face
-    const leftGrad = ctx.createLinearGradient(leftX, peakY, peakX, baseY);
-    leftGrad.addColorStop(0, "#ffffff");
-    leftGrad.addColorStop(1, "#f2f3f6");
-    ctx.beginPath();
-    ctx.moveTo(peakX, peakY);
-    ctx.lineTo(leftX, baseY);
-    ctx.lineTo(peakX, baseY);
-    ctx.closePath();
-    ctx.fillStyle = leftGrad;
-    ctx.fill();
-
-    // Right face
-    const rightGrad = ctx.createLinearGradient(peakX, peakY, rightX, baseY);
-    rightGrad.addColorStop(0, "#f5f6f8");
-    rightGrad.addColorStop(1, "#d9dee6");
-    ctx.beginPath();
-    ctx.moveTo(peakX, peakY);
-    ctx.lineTo(rightX, baseY);
-    ctx.lineTo(peakX, baseY);
-    ctx.closePath();
-    ctx.fillStyle = rightGrad;
-    ctx.fill();
-
-    // Floor joints
-    for (const side of /** @type {const} */ (["L", "R"])) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(peakX, peakY);
-      ctx.lineTo(side === "L" ? leftX : rightX, baseY);
-      ctx.lineTo(peakX, baseY);
-      ctx.closePath();
-      ctx.clip();
-      ctx.strokeStyle = side === "L" ? "rgba(180,186,196,0.45)" : "rgba(160,168,180,0.4)";
-      ctx.lineWidth = 1;
-      for (let i = 1; i <= ROWS + 1; i++) {
-        const v = i / (ROWS + 1.2);
-        const a = facePoint(side, 0, v, peakX, peakY, leftX, rightX, baseY);
-        const b = facePoint(side, 1, v, peakX, peakY, leftX, rightX, baseY);
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.stroke();
-      }
-      ctx.restore();
+    if (!logoReady || !logo) {
+      if (!prefersReduced) requestAnimationFrame(draw);
+      return;
     }
 
-    // Corner
+    const float = prefersReduced ? 0 : Math.sin(elapsed * 0.9) * 6;
+    const markH = Math.min(h * 0.72, w * 0.62);
+    const markW = markH * (logo.naturalWidth / logo.naturalHeight);
+    const cx = w * 0.5 + pointer.x * 18;
+    const cy = h * 0.5 + pointer.y * 12 + (1 - ease) * h * 0.12 + float;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.globalAlpha = ease;
+    const scale = 0.88 + ease * 0.12 + (flashing ? flashT * 0.03 : 0);
+    ctx.scale(scale, scale);
+
+    // Soft ground shadow
+    ctx.save();
+    ctx.globalAlpha = ease * 0.22;
+    ctx.fillStyle = "rgba(28, 31, 36, 0.4)";
     ctx.beginPath();
-    ctx.moveTo(peakX, peakY);
-    ctx.lineTo(peakX, baseY);
-    ctx.strokeStyle = "rgba(140,148,160,0.7)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.ellipse(0, markH * 0.48, markW * 0.4, markH * 0.05, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
 
-    // Large arched recesses — packed toward the corner like the reference
-    windows.forEach((win) => {
-      const vCenter = (win.row + 1.05) / (ROWS + 1.15);
-      // Start near the seam (u≈0.1) and step outward
-      const uCenter = 0.1 + (win.col + 0.5) * (0.78 / COLS);
-      const p = facePoint(win.side, uCenter, vCenter, peakX, peakY, leftX, rightX, baseY);
+    // Bright plate so teal strokes read on the overcast sky
+    const plate = ctx.createRadialGradient(0, -markH * 0.02, markW * 0.08, 0, 0, markW * 0.78);
+    plate.addColorStop(0, "rgba(255, 255, 255, 0.92)");
+    plate.addColorStop(0.45, "rgba(255, 255, 255, 0.55)");
+    plate.addColorStop(1, "rgba(255, 255, 255, 0)");
+    ctx.fillStyle = plate;
+    ctx.beginPath();
+    ctx.arc(0, 0, markW * 0.78, 0, Math.PI * 2);
+    ctx.fill();
 
-      const faceWidth = Math.abs(
-        facePoint(win.side, 1, vCenter, peakX, peakY, leftX, rightX, baseY).x -
-          facePoint(win.side, 0, vCenter, peakX, peakY, leftX, rightX, baseY).x
-      );
-      const ww = (faceWidth * 0.78) / COLS;
-      const hh = ww * 1.5;
-      if (ww < 14 || vCenter < 0.16 || uCenter > 0.9) return;
+    // Ambient teal bloom
+    const bloom = ctx.createRadialGradient(0, -markH * 0.05, markW * 0.1, 0, 0, markW * 0.72);
+    bloom.addColorStop(0, flashing ? "rgba(42, 212, 224, 0.32)" : "rgba(0, 168, 181, 0.2)");
+    bloom.addColorStop(0.55, "rgba(0, 168, 181, 0.06)");
+    bloom.addColorStop(1, "rgba(0, 168, 181, 0)");
+    ctx.fillStyle = bloom;
+    ctx.beginPath();
+    ctx.arc(0, 0, markW * 0.72, 0, Math.PI * 2);
+    ctx.fill();
 
-      const appear = prefersReduced
-        ? 1
-        : Math.max(0, Math.min(1, (elapsed - 0.28 - win.row * 0.06) / 0.55));
+    // Logo
+    ctx.drawImage(logo, -markW / 2, -markH / 2, markW, markH);
 
-      let fill = "#14171c";
-      if (win.accent === "teal") {
-        const a = prefersReduced ? 1 : Math.max(0, Math.min(1, (elapsed - 1.05) / 0.45));
-        fill = mixColor("#14171c", flashing ? "#2ad4e0" : TEAL, a);
-      } else if (win.accent === "red") {
-        const a = prefersReduced ? 1 : Math.max(0, Math.min(1, (elapsed - 1.25) / 0.45));
-        fill = mixColor("#14171c", flashing ? "#ff5a55" : RED, a);
-      } else {
-        const live = 0.5 + 0.5 * Math.sin(elapsed * 0.65 + win.pulse);
-        if (live > 0.93) fill = "#262c34";
-      }
+    // Chimney accent pulse (upper-right of mark, matching logo chimney)
+    const pulse = prefersReduced ? 0.55 : 0.5 + 0.5 * Math.sin(elapsed * 2.2);
+    const chimneyX = markW * 0.18;
+    const chimneyY = -markH * 0.34;
+    const glowR = markW * (0.06 + pulse * 0.04) * (flashing ? 1 + flashT * 1.4 : 1);
+    const chimneyGlow = ctx.createRadialGradient(chimneyX, chimneyY, 0, chimneyX, chimneyY, glowR);
+    chimneyGlow.addColorStop(0, flashing ? `rgba(255, 90, 85, ${0.55 * pulse})` : `rgba(229, 57, 53, ${0.35 * pulse})`);
+    chimneyGlow.addColorStop(1, "rgba(229, 57, 53, 0)");
+    ctx.fillStyle = chimneyGlow;
+    ctx.beginPath();
+    ctx.arc(chimneyX, chimneyY, glowR, 0, Math.PI * 2);
+    ctx.fill();
 
-      const skew = win.side === "L" ? -0.08 * uCenter : 0.08 * uCenter;
-      drawArchAt(p.x, p.y, ww, hh, fill, appear, skew);
-    });
+    // Flash wash
+    if (flashing && flashT > 0) {
+      ctx.globalAlpha = flashT * 0.22;
+      ctx.fillStyle = TEAL;
+      ctx.fillRect(-markW / 2, -markH / 2, markW, markH);
+    }
 
     ctx.restore();
 
     if (!prefersReduced) requestAnimationFrame(draw);
-  }
-
-  function mixColor(a, b, t) {
-    const pa = hexToRgb(a);
-    const pb = hexToRgb(b);
-    return `rgb(${Math.round(pa.r + (pb.r - pa.r) * t)},${Math.round(pa.g + (pb.g - pa.g) * t)},${Math.round(
-      pa.b + (pb.b - pa.b) * t
-    )})`;
-  }
-
-  function hexToRgb(hex) {
-    const raw = hex.replace("#", "");
-    return {
-      r: parseInt(raw.slice(0, 2), 16),
-      g: parseInt(raw.slice(2, 4), 16),
-      b: parseInt(raw.slice(4, 6), 16),
-    };
   }
 
   function flash() {
@@ -259,6 +146,7 @@ function setupHeroCanvas() {
     if (prefersReduced) requestAnimationFrame(draw);
   }
 
+  loadLogo();
   resize();
   requestAnimationFrame(draw);
 
