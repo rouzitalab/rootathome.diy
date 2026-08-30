@@ -28,16 +28,22 @@ function setupHeroCanvas() {
   /** @type {HTMLImageElement | null} */
   let logo = null;
   let logoReady = false;
+  let logoSrc = "";
 
   function loadLogo() {
+    const src = document.documentElement.dataset.theme === "dark" ? "assets/logo-mono.png" : "assets/logo-mark.png";
+    if (src === logoSrc) return;
+    logoSrc = src;
+    logoReady = false;
     const img = new Image();
     img.decoding = "async";
     img.onload = () => {
+      if (src !== logoSrc) return;
       logo = img;
       logoReady = true;
       if (prefersReduced) requestAnimationFrame(draw);
     };
-    img.src = "assets/logo-mark.png";
+    img.src = src;
   }
 
   function resize() {
@@ -59,11 +65,13 @@ function setupHeroCanvas() {
 
     ctx.clearRect(0, 0, w, h);
 
+    const darkTheme = document.documentElement.dataset.theme === "dark";
+
     // Overcast sky (same atmosphere as before)
     const sky = ctx.createLinearGradient(0, 0, 0, h);
-    sky.addColorStop(0, "#b9c1cd");
-    sky.addColorStop(0.45, "#c5ccd6");
-    sky.addColorStop(1, "#aeb7c4");
+    sky.addColorStop(0, darkTheme ? "#1b292c" : "#b9c1cd");
+    sky.addColorStop(0.45, darkTheme ? "#263b3e" : "#c5ccd6");
+    sky.addColorStop(1, darkTheme ? "#101a1d" : "#aeb7c4");
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, w, h);
 
@@ -87,17 +95,17 @@ function setupHeroCanvas() {
     // Soft ground shadow
     ctx.save();
     ctx.globalAlpha = ease * 0.22;
-    ctx.fillStyle = "rgba(28, 31, 36, 0.4)";
+    ctx.fillStyle = darkTheme ? "rgba(0, 0, 0, 0.5)" : "rgba(28, 31, 36, 0.4)";
     ctx.beginPath();
     ctx.ellipse(0, markH * 0.48, markW * 0.4, markH * 0.05, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
-    // Bright plate so teal strokes read on the overcast sky
+    // Subtle plate so teal strokes read on either atmosphere
     const plate = ctx.createRadialGradient(0, -markH * 0.02, markW * 0.08, 0, 0, markW * 0.78);
-    plate.addColorStop(0, "rgba(255, 255, 255, 0.92)");
-    plate.addColorStop(0.45, "rgba(255, 255, 255, 0.55)");
-    plate.addColorStop(1, "rgba(255, 255, 255, 0)");
+    plate.addColorStop(0, darkTheme ? "rgba(93, 151, 152, 0.28)" : "rgba(255, 255, 255, 0.92)");
+    plate.addColorStop(0.45, darkTheme ? "rgba(67, 121, 124, 0.16)" : "rgba(255, 255, 255, 0.55)");
+    plate.addColorStop(1, darkTheme ? "rgba(67, 121, 124, 0)" : "rgba(255, 255, 255, 0)");
     ctx.fillStyle = plate;
     ctx.beginPath();
     ctx.arc(0, 0, markW * 0.78, 0, Math.PI * 2);
@@ -164,7 +172,7 @@ function setupHeroCanvas() {
     { passive: true }
   );
 
-  return { flash };
+  return { flash, setTheme: loadLogo };
 }
 
 /* ── Reveal on scroll ──────────────────────────────────────── */
@@ -435,6 +443,35 @@ function setupSearch() {
   });
 }
 
+/* ── Theme ─────────────────────────────────────────────────── */
+function setupTheme(hero) {
+  const toggle = $("[data-theme-toggle]");
+  if (!toggle) return;
+
+  const brandLogos = $$("[data-brand-logo]");
+  const themeColor = $("[data-theme-color]");
+
+  const apply = (theme, save = false) => {
+    const dark = theme === "dark";
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    toggle.setAttribute("aria-pressed", String(dark));
+    toggle.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+    toggle.title = dark ? "Switch to light theme" : "Switch to dark theme";
+    brandLogos.forEach((image) => {
+      image.src = dark ? "assets/logo-mono.png" : "assets/logo-mark.png";
+    });
+    if (themeColor) themeColor.content = dark ? "#101719" : "#ffffff";
+    if (save) localStorage.setItem("rah-theme", dark ? "dark" : "light");
+    hero?.setTheme?.();
+  };
+
+  apply(document.documentElement.dataset.theme || "light");
+  toggle.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    apply(next, true);
+  });
+}
+
 /* ── Mobile menu ───────────────────────────────────────────── */
 function setupMenu() {
   const toggle = $("[data-menu-toggle]");
@@ -470,6 +507,7 @@ function boot() {
   setupWaitlist(hero);
   setupCountdown();
   setupSearch();
+  setupTheme(hero);
   setupMenu();
 }
 
