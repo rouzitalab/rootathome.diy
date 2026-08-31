@@ -31,7 +31,7 @@ function setupHeroCanvas() {
   let logoSrc = "";
 
   function loadLogo() {
-    const src = document.documentElement.dataset.theme === "dark" ? "assets/logo-mono.png" : "assets/logo-mark.png";
+    const src = document.documentElement.dataset.theme === "dark" ? "assets/logo-dark.png" : "assets/logo-light.png";
     if (src === logoSrc) return;
     logoSrc = src;
     logoReady = false;
@@ -123,19 +123,6 @@ function setupHeroCanvas() {
 
     // Logo
     ctx.drawImage(logo, -markW / 2, -markH / 2, markW, markH);
-
-    // Chimney accent pulse (upper-right of mark, matching logo chimney)
-    const pulse = prefersReduced ? 0.55 : 0.5 + 0.5 * Math.sin(elapsed * 2.2);
-    const chimneyX = markW * 0.18;
-    const chimneyY = -markH * 0.34;
-    const glowR = markW * (0.06 + pulse * 0.04) * (flashing ? 1 + flashT * 1.4 : 1);
-    const chimneyGlow = ctx.createRadialGradient(chimneyX, chimneyY, 0, chimneyX, chimneyY, glowR);
-    chimneyGlow.addColorStop(0, flashing ? `rgba(255, 90, 85, ${0.55 * pulse})` : `rgba(229, 57, 53, ${0.35 * pulse})`);
-    chimneyGlow.addColorStop(1, "rgba(229, 57, 53, 0)");
-    ctx.fillStyle = chimneyGlow;
-    ctx.beginPath();
-    ctx.arc(chimneyX, chimneyY, glowR, 0, Math.PI * 2);
-    ctx.fill();
 
     // Flash wash
     if (flashing && flashT > 0) {
@@ -450,6 +437,7 @@ function setupTheme(hero) {
 
   const brandLogos = $$("[data-brand-logo]");
   const themeColor = $("[data-theme-color]");
+  const favicon = $("[data-favicon]");
 
   const apply = (theme, save = false) => {
     const dark = theme === "dark";
@@ -458,8 +446,9 @@ function setupTheme(hero) {
     toggle.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
     toggle.title = dark ? "Switch to light theme" : "Switch to dark theme";
     brandLogos.forEach((image) => {
-      image.src = dark ? "assets/logo-mono.png" : "assets/logo-mark.png";
+      image.src = dark ? "assets/logo-dark.png" : "assets/logo-light.png";
     });
+    if (favicon) favicon.href = `assets/logo-${dark ? "dark" : "light"}.png?v=3`;
     if (themeColor) themeColor.content = dark ? "#101719" : "#ffffff";
     if (save) localStorage.setItem("rah-theme", dark ? "dark" : "light");
     hero?.setTheme?.();

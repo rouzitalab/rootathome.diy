@@ -9,13 +9,13 @@
       content="root@home — self-hosted household media. Your files. Your hardware. Coming soon."
     />
     <meta name="theme-color" content="#ffffff" data-theme-color />
-    <link rel="icon" href="assets/favicon.svg?v=2" type="image/svg+xml" />
-    <link rel="icon" href="assets/logo-mono.png?v=2" type="image/png" sizes="32x32" />
+    <link rel="icon" href="assets/logo-light.png?v=3" type="image/png" sizes="32x32" data-favicon />
     <script>
       (() => {
         const saved = localStorage.getItem("rah-theme");
         const theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         document.documentElement.dataset.theme = theme;
+        document.querySelector("[data-favicon]").href = `assets/logo-${theme}.png?v=3`;
       })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,7 +32,7 @@
 
     <header class="site-header" id="top">
       <a class="brand" href="#top" aria-label="root@home home">
-        <img class="brand-mark" src="assets/logo-mark.png" data-brand-logo width="28" height="33" alt="" />
+        <img class="brand-mark" src="assets/logo-light.png" data-brand-logo width="28" height="28" alt="" />
         <span class="brand-text">root<span class="brand-at">@</span>home</span>
       </a>
 
