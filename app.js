@@ -31,7 +31,7 @@ function setupHeroCanvas() {
   let logoSrc = "";
 
   function loadLogo() {
-    const src = document.documentElement.dataset.theme === "dark" ? "assets/logo-dark.png" : "assets/logo-light.png";
+    const src = "assets/new-logo.png";
     if (src === logoSrc) return;
     logoSrc = src;
     logoReady = false;
@@ -446,9 +446,9 @@ function setupTheme(hero) {
     toggle.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
     toggle.title = dark ? "Switch to light theme" : "Switch to dark theme";
     brandLogos.forEach((image) => {
-      image.src = dark ? "assets/logo-dark.png" : "assets/logo-light.png";
+      image.src = "assets/new-logo.png";
     });
-    if (favicon) favicon.href = `assets/logo-${dark ? "dark" : "light"}.png?v=3`;
+    if (favicon) favicon.href = "assets/new-logo.png?v=4";
     if (themeColor) themeColor.content = dark ? "#101719" : "#ffffff";
     if (save) localStorage.setItem("rah-theme", dark ? "dark" : "light");
     hero?.setTheme?.();

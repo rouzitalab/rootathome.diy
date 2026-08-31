@@ -150,8 +150,9 @@ html[data-theme="dark"] .site-header.is-scrolled {
 }
 
 .brand-mark {
-  width: 28px;
-  height: auto;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
