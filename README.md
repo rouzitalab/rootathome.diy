@@ -28,3 +28,8 @@ Static files cannot force TLS alone — GitHub Pages must issue the cert and red
 After that, `http://` requests redirect to `https://`.
 
 **DNS tip:** apex `rootathome.diy` should use only GitHub Pages A records (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`). Extra GoDaddy forwarding IPs can break HTTPS for the bare domain.
+
+## License
+
+All rights reserved — see [`LICENSE`](LICENSE). This is proprietary, source-visible code: viewing the
+repository does not grant permission to copy, modify, distribute, or reuse it.
