@@ -17,7 +17,19 @@
       align-items: center;
       justify-content: center;
       padding: 32px 20px;
+      position: relative;
     }
+    .logo {
+      position: absolute;
+      top: 28px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+    .logo .at { color: #16c9c6; }
     main { max-width: 36rem; }
     h1 { font-size: 2.4rem; letter-spacing: -0.03em; margin: 0 0 12px; }
     p { line-height: 1.55; color: #b9b3a6; }
@@ -37,6 +49,7 @@
   </style>
 </head>
 <body>
+  <header class="logo" aria-hidden="true">root<span class="at">@</span>home</header>
   <main>
     <h1>root@home</h1>
     <p>One household server on a Mac, PC, or Linux box you already leave on. Phase 1 beta: Android app + server installer. Your files stay on your hardware.</p>
@@ -44,7 +57,7 @@
       <a class="btn" href="https://beta.rootathome.diy/download">Get beta access</a>
     </p>
     <p class="note">You need an invite code from the operator. iOS (TestFlight) comes in Phase 2 after we open the program to more households.</p>
-    <p><a class="quiet" href="/setup-guide/">Setup guide</a> &middot; <a class="quiet" href="https://github.com/rouzitalab/rootathome">Source and docs</a></p>
+    <p><a class="quiet" href="/setup-guide/">Setup guide</a></p>
   </main>
 </body>
 </html>

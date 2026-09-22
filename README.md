@@ -1,6 +1,6 @@
 # rootathome.diy
 
-Coming-soon site for [root@home](https://github.com/rouzitalab/rootathome) — self-hosted household media.
+Coming-soon site for root@home — self-hosted household media.
 
 Custom domain: `www.rootathome.diy` (see `CNAME`).
 
