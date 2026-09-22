@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setup guide — root@home</title>
+  <meta name="description" content="Install the root@home server and pair your phone — about 10 minutes, step by step with screenshots.">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      background: #0b0b0c;
+      color: #f4f1ea;
+      line-height: 1.6;
+    }
+    main { max-width: 40rem; margin: 0 auto; padding: 48px 20px 96px; }
+    h1 { font-size: 2.2rem; letter-spacing: -0.03em; margin: 0 0 8px; }
+    h2 {
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      margin: 56px 0 4px;
+      padding-top: 8px;
+      border-top: 1px solid #262625;
+    }
+    h2:first-of-type { border-top: 0; margin-top: 32px; }
+    h3 { font-size: 1.05rem; margin: 24px 0 8px; color: #e8dcc8; }
+    p, li { color: #b9b3a6; }
+    strong { color: #f4f1ea; }
+    a { color: #e8dcc8; }
+    .lede { font-size: 1.05rem; color: #d8d3c8; }
+    .req { background: #141414; border: 1px solid #262625; border-radius: 14px; padding: 18px 22px; }
+    .req li { margin: 6px 0; }
+    figure { margin: 18px 0 28px; }
+    figure img {
+      display: block;
+      max-width: 320px;
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid #262625;
+    }
+    figcaption { font-size: 0.9rem; color: #837d70; margin-top: 8px; }
+    .platform {
+      background: #141414;
+      border: 1px solid #262625;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+    .platform b { color: #e8dcc8; }
+    .callout {
+      background: rgba(232, 220, 200, 0.08);
+      border: 1px solid rgba(232, 220, 200, 0.25);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .steps { padding-left: 1.2rem; }
+    .steps li { margin: 6px 0; }
+    code { background: #1a1a19; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    .top-link { font-size: 0.95rem; }
+    .troubleshoot dt { color: #f4f1ea; font-weight: 650; margin-top: 16px; }
+    .troubleshoot dd { margin: 4px 0 0; }
+    footer { margin-top: 64px; font-size: 0.9rem; color: #6f6a5f; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="top-link"><a href="/">&larr; root@home</a></p>
+    <h1>Setting up root@home</h1>
+    <p class="lede">Everything your household needs for the beta: installing the server on a
+      computer that stays on, and pairing your Android phone to it. About 10 minutes.</p>
+
+    <div class="req">
+      <strong>You'll need:</strong>
+      <ul>
+        <li>A Mac, Windows PC, or Linux machine that can stay powered on and connected to your
+          home Wi-Fi (or Ethernet) — this becomes <strong>Home</strong>.</li>
+        <li>An Android phone on the <strong>same Wi-Fi network</strong> as that computer.</li>
+        <li>Your beta invite code (from whoever invited you).</li>
+      </ul>
+    </div>
+
+    <h2>Part 1 — Install the server</h2>
+
+    <h3>Get the installer</h3>
+    <ol class="steps">
+      <li>On the computer that will stay on, go to <strong>rootathome.diy</strong> and choose
+        <strong>Get beta access</strong>.</li>
+      <li>Enter your invite code and pick your computer's platform.</li>
+      <li>Click the download link.</li>
+    </ol>
+
+    <h3>Run the installer</h3>
+    <div class="platform">
+      <b>macOS</b> — open the downloaded <code>.pkg</code>. It isn't notarized yet during the
+      beta, so Gatekeeper will say it's from an unidentified developer: right-click (or
+      Control-click) the file &rarr; <strong>Open</strong> &rarr; <strong>Open</strong> again to
+      confirm. It installs as a boot service and opens the setup page automatically.
+    </div>
+    <div class="platform">
+      <b>Windows</b> — run the downloaded <code>.exe</code>. SmartScreen will likely show
+      "Windows protected your PC" since it isn't code-signed yet during the beta — click
+      <strong>More info</strong> &rarr; <strong>Run anyway</strong>. Needs administrator rights
+      (it registers a Windows service) and opens the setup page automatically when done.
+    </div>
+    <div class="platform">
+      <b>Linux</b> — install the <code>.deb</code>
+      (<code>sudo apt install ./rootathome_*.deb</code>) or extract the <code>.tar.gz</code> and
+      follow the included instructions. Registers a boot service and opens the setup page if a
+      browser session is running.
+    </div>
+    <p>If nothing opens automatically, open <code>http://127.0.0.1:8080/setup</code> yourself in
+      a browser on that same computer.</p>
+
+    <h3>Create the household</h3>
+    <p>You'll land on this page:</p>
+    <figure>
+      <img src="assets/setup-wizard-filled.png" alt="Setup wizard with household name, username, and password filled in">
+      <figcaption>Pick a household name, your admin username, a password, and optionally where to keep files.</figcaption>
+    </figure>
+    <p>Click <strong>Create household</strong> and you'll see the pairing card:</p>
+    <figure>
+      <img src="assets/setup-wizard-paired.png" alt="Setup wizard showing a QR code to pair the first phone">
+      <figcaption>Leave this open — you'll scan it from the phone in Part 3.</figcaption>
+    </figure>
+
+    <h2>Part 2 — Install the Android app</h2>
+    <p>On the phone, open <strong>rootathome.diy</strong> in a mobile browser, enter the same
+      invite code, and choose <strong>Android app (APK)</strong>:</p>
+    <figure>
+      <img src="assets/download-android.png" alt="Download page showing Android install instructions after redeeming a code">
+      <figcaption>The beta isn't on the Play Store yet, so Android will warn it doesn't recognize the app — that's expected.</figcaption>
+    </figure>
+    <ol class="steps">
+      <li>Open the downloaded file from your notifications or Downloads folder.</li>
+      <li>If prompted, tap <strong>Settings</strong> and allow your browser to
+        <strong>install unknown apps</strong> — a one-time, per-app permission.</li>
+      <li>Go back and tap <strong>Install</strong>.</li>
+    </ol>
+
+    <h2>Part 3 — Pair the phone to Home</h2>
+    <p>Open <strong>root@home</strong> on the phone. If it's on the same Wi-Fi as the server, it
+      usually finds it automatically:</p>
+    <figure>
+      <img src="assets/app-pair-screen.png" alt="Pair screen listing a discovered server on the local network">
+      <figcaption>Tap the entry under "On this network" — or scan the QR from Part 1 — or type the address directly.</figcaption>
+    </figure>
+    <p>If nothing shows up (common on guest Wi-Fi or a network that isolates devices from each
+      other), type the address shown on the setup wizard page directly into <strong>QR or
+      address</strong> and tap <strong>Connect</strong>.</p>
+
+    <h2>Part 4 — Sign in</h2>
+    <p>Sign in with the admin username and password you created in Part 1:</p>
+    <figure>
+      <img src="assets/app-login-screen.png" alt="Login screen with username and password fields">
+    </figure>
+
+    <h2>Part 5 — Turn on your private library</h2>
+    <p class="callout">Recommended, not required. This encrypts anything you choose to keep in
+      your private library end-to-end — the server only ever stores ciphertext for it.</p>
+    <p>In <strong>Account</strong>, under <strong>Private library</strong>, set a vault
+      password:</p>
+    <figure>
+      <img src="assets/app-account-vault.png" alt="Account screen showing the Private library vault setup section">
+    </figure>
+    <p>You'll be shown a one-time recovery key — write it down somewhere safe. It's the only way
+      back in if you forget the vault password, since the server never sees it either.</p>
+
+    <h2>Part 6 — Add another household member</h2>
+    <p>The admin account from Part 1 is the only one that exists so far. Anyone else — a
+      partner, a kid, a roommate — needs their own account before they can sign in from their
+      own phone or computer.</p>
+    <p>Open <strong>Admin</strong> (in the app, or in a browser at your server's address — the
+      same one from Part 1's pairing card has an <strong>Open in browser</strong> link) and sign
+      in as the admin. Under <strong>Add user</strong>, fill in a username and a temporary
+      password, and pick a role — <strong>user</strong> for a regular household member,
+      <strong>guest</strong> for someone who should have more limited access:</p>
+    <figure>
+      <img src="assets/admin-add-user-filled.png" alt="Admin screen, Add user form filled in with a username, temporary password, and role">
+    </figure>
+    <p>Click <strong>Create user</strong>:</p>
+    <figure>
+      <img src="assets/admin-add-user-created.png" alt="Admin screen after creating a user, showing the confirmation message">
+    </figure>
+    <p>Share the username and temporary password with them <strong>in person, not over chat or
+      email</strong> — the temporary password only works once.</p>
+    <p>On their own device, they open root@home (the app, or the browser) and sign in with that
+      username and temporary password:</p>
+    <figure>
+      <img src="assets/web-login-second-device.png" alt="Sign-in screen with a new user's username and temporary password entered">
+    </figure>
+    <p>Since it's their first sign-in, they're immediately asked to set their own password — the
+      temporary one stops working the moment they do:</p>
+    <figure>
+      <img src="assets/web-forced-password.png" alt="Choose your password screen shown on first sign-in">
+    </figure>
+    <p>From here on, that's their own account: their own password, their own private library and
+      vault password (Part 5), on whatever device they signed in from.</p>
+
+    <h2>Troubleshooting</h2>
+    <dl class="troubleshoot">
+      <dt>Nothing shows up under "On this network."</dt>
+      <dd>Some guest Wi-Fi and mesh routers isolate devices from each other, which blocks the
+        discovery root@home relies on. Type the server's address directly (shown on the setup
+        wizard page) instead — Ethernet on the server side is also more reliable than Wi-Fi for
+        this.</dd>
+      <dt>"Install blocked" on Android.</dt>
+      <dd>You skipped the "install unknown apps" permission — open the downloaded file again and
+        allow it when prompted.</dd>
+      <dt>Forgot the vault password.</dt>
+      <dd>Use the recovery key you saved in Part 5, from Account &rarr; Private library.</dd>
+      <dt>Something else.</dt>
+      <dd>Ask whoever sent you the invite code — they can check the server's own status page, or
+        reach out to the beta operator.</dd>
+    </dl>
+
+    <footer>root@home — household media on hardware you already own.</footer>
+  </main>
+</body>
+</html>
