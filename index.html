@@ -2,49 +2,960 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>root@home</title>
-  <meta name="description" content="Household media on hardware you already own. Join the Phase 1 beta for Android + server installer.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>root@home — Your family's memories, at home</title>
+  <meta name="description" content="root@home turns a computer you already own into a private home cloud for your family's photos, videos, movies, music and documents. No subscription to see your own memories.">
+  <meta name="theme-color" content="#07080c">
+  <meta property="og:title" content="root@home — Your family's memories, at home">
+  <meta property="og:description" content="A private home cloud for your family's photos, videos, music and documents. On hardware you own. No monthly rent.">
+  <meta property="og:image" content="https://rootathome.diy/assets/og-image.jpg">
+  <meta property="og:url" content="https://rootathome.diy/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="assets/icon-64.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { color-scheme: dark; }
+    :root {
+      color-scheme: dark;
+      --bg: #07080c;
+      --bg-2: #0d1017;
+      --surface: #131723;
+      --line: rgba(255, 255, 255, 0.08);
+      --line-2: rgba(255, 255, 255, 0.14);
+      --ink: #f2f4f8;
+      --ink-2: #c3c9d6;
+      --muted: #8a92a6;
+      --teal: #3fd6c6;
+      --blue: #4a90e2;
+      --violet: #7b6fe3;
+      --app-green: #3dd68c;
+      --grad: linear-gradient(100deg, var(--teal) 0%, var(--blue) 50%, var(--violet) 100%);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --display: "Syne", ui-sans-serif, system-ui, sans-serif;
+      --body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --max: 1160px;
+      --gutter: clamp(16px, 4vw, 40px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-      background: #0b0b0c;
-      color: #f4f1ea;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 20px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-    .logo { width: 220px; height: auto; margin: 0 0 16px; }
-    main { max-width: 36rem; }
-    p { line-height: 1.55; color: #b9b3a6; }
-    a.btn {
-      display: inline-block;
-      margin-top: 8px;
-      margin-right: 10px;
-      padding: 12px 18px;
-      border-radius: 999px;
-      background: #e8dcc8;
-      color: #111;
-      font-weight: 650;
-      text-decoration: none;
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+    .grad-text {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
-    a.quiet { color: #e8dcc8; }
-    .note { font-size: 0.95rem; margin-top: 1.25rem; }
+    .eyebrow {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin: 0 0 18px;
+    }
+    h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; margin: 0; line-height: 1.05; }
+    h2 { font-size: clamp(2.2rem, 5.6vw, 4.2rem); font-weight: 800; }
+    h3 { font-size: 1.35rem; font-weight: 700; line-height: 1.2; }
+    .lede { font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--ink-2); max-width: 40rem; }
+    section { position: relative; }
+
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: 0.08s; } .reveal.d2 { transition-delay: 0.16s; } .reveal.d3 { transition-delay: 0.24s; }
+
+    /* ── Nav ─────────────────────────────── */
+    .nav {
+      position: fixed; inset: 0 0 auto 0; z-index: 50;
+      transition: background 0.4s, border-color 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    .nav.scrolled {
+      background: rgba(7, 8, 12, 0.72);
+      backdrop-filter: saturate(180%) blur(18px);
+      -webkit-backdrop-filter: saturate(180%) blur(18px);
+      border-color: var(--line);
+    }
+    .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .nav-logo img { height: 22px; width: auto; opacity: 0; transition: opacity 0.4s; }
+    .nav.scrolled .nav-logo img { opacity: 1; }
+    .nav-links { display: flex; gap: 28px; align-items: center; font-size: 0.9rem; }
+    .nav-links a { text-decoration: none; color: var(--ink-2); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links .pill { color: #06121a; background: var(--ink); padding: 7px 16px; border-radius: 999px; font-weight: 600; }
+    .nav-links .pill:hover { color: #06121a; background: #fff; }
+    @media (max-width: 720px) { .nav-links a:not(.pill) { display: none; } }
+
+    /* ── Hero ────────────────────────────── */
+    .hero { padding: 120px 0 0; text-align: center; overflow: hidden; }
+    .hero::before {
+      content: ""; position: absolute; inset: -20% -10% auto; height: 900px; pointer-events: none;
+      background:
+        radial-gradient(40% 50% at 30% 40%, rgba(63, 214, 198, 0.18), transparent 70%),
+        radial-gradient(40% 50% at 70% 35%, rgba(123, 111, 227, 0.20), transparent 70%);
+      filter: blur(20px);
+    }
+    .hero-logo { width: min(560px, 82vw); height: auto; margin: 0 auto 44px; position: relative; }
+    .hero h1 { font-size: clamp(2.4rem, 6.6vw, 5.4rem); font-weight: 800; position: relative; max-width: 15ch; margin: 0 auto; }
+    .hero .lede { margin: 26px auto 0; position: relative; }
+    .hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 36px; position: relative; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600;
+      padding: 14px 26px; border-radius: 999px; font-size: 1rem; transition: transform 0.3s var(--ease), box-shadow 0.3s, background 0.3s;
+    }
+    .btn-primary { background: var(--ink); color: #06121a; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(74, 144, 226, 0.35); }
+    .btn-ghost { color: var(--ink); border: 1px solid var(--line-2); }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.06); }
+    .btn svg { width: 16px; height: 16px; }
+
+    .hero-stage { position: relative; height: clamp(520px, 64vw, 720px); margin-top: 72px; }
+    .polaroid {
+      position: absolute; width: clamp(140px, 19vw, 240px); aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55); border: 1px solid var(--line-2);
+      transform: translateY(var(--py, 0px)) rotate(var(--r));
+      will-change: transform;
+    }
+    .polaroid img { width: 100%; height: 100%; object-fit: cover; }
+    .p1 { left: 4%; top: 12%; --r: -9deg; }
+    .p2 { left: 17%; top: 46%; --r: 6deg; width: clamp(120px, 15vw, 190px); }
+    .p3 { right: 4%; top: 8%; --r: 8deg; }
+    .p4 { right: 16%; top: 48%; --r: -5deg; width: clamp(120px, 15vw, 190px); }
+
+    .phone {
+      position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+      width: clamp(250px, 26vw, 320px); aspect-ratio: 9 / 19.2; border-radius: 46px; padding: 11px;
+      background: linear-gradient(160deg, #2a2f3c, #0e1118 60%);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 60px 120px rgba(0, 0, 0, 0.7), 0 0 120px rgba(74, 144, 226, 0.25);
+      z-index: 2;
+    }
+    .screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: #0a0c12; position: relative; display: flex; flex-direction: column; }
+    .notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 34%; height: 24px; border-radius: 20px; background: #000; z-index: 3; }
+    .app-top { padding: 48px 16px 10px; text-align: left; }
+    .app-top b { font-family: var(--display); font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; }
+    .app-top small { display: block; color: #9aa3b8; font-size: 0.7rem; margin-top: 2px; }
+    .app-top small i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--app-green); margin-right: 5px; vertical-align: 1px; }
+    .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; flex: 1; align-content: start; overflow: hidden; }
+    .app-grid div { aspect-ratio: 1; background-size: cover; background-position: center; }
+    .app-grid .up { position: relative; }
+    .app-grid .up::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 8px; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, 0.3); }
+    .app-grid .up::before {
+      content: ""; position: absolute; left: 8px; bottom: 8px; height: 3px; border-radius: 3px; z-index: 1;
+      background: var(--app-green); width: 0; animation: upload 3.2s var(--ease) infinite;
+    }
+    .app-grid .up:nth-child(2)::before { animation-delay: 0.6s; }
+    .app-grid .up:nth-child(3)::before { animation-delay: 1.2s; }
+    @keyframes upload { 0% { width: 0; } 75%, 100% { width: calc(100% - 16px); } }
+    .app-tabs {
+      display: flex; justify-content: space-around; padding: 10px 6px 18px; border-top: 1px solid var(--line);
+      background: rgba(26, 31, 44, 0.95); font-size: 0.55rem; color: #9aa3b8;
+    }
+    .app-tabs span { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .app-tabs span.on { color: var(--ink); }
+    .app-tabs svg { width: 18px; height: 18px; }
+    .hero-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(transparent, var(--bg)); z-index: 3; pointer-events: none; }
+    @media (max-width: 720px) {
+      .p2, .p4 { display: none; }
+      .p1 { left: -8%; top: 22%; } .p3 { right: -8%; top: 30%; }
+    }
+
+    /* ── Story (scroll-lit words) ────────── */
+    .story { padding: clamp(80px, 14vw, 180px) 0; }
+    .story-text {
+      font-family: var(--display); font-weight: 700; font-size: clamp(1.7rem, 4.2vw, 3.4rem); line-height: 1.18;
+      letter-spacing: -0.02em; margin: 0; max-width: 24em;
+    }
+    .story-text .w { color: rgba(242, 244, 248, 0.14); transition: color 0.25s linear; }
+    .story-text .w.lit { color: var(--ink); }
+    .story-text .w.hl.lit { color: var(--teal); }
+
+    /* ── The moment (photo + notification) ── */
+    .moment { padding: 0 0 clamp(80px, 12vw, 160px); }
+    .moment-card { position: relative; border-radius: 32px; overflow: hidden; min-height: clamp(480px, 60vw, 680px); display: flex; align-items: flex-end; }
+    .moment-card > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transform: scale(var(--s, 1.08)); }
+    .moment-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,8,12,0.1) 20%, rgba(7,8,12,0.88) 100%); }
+    .moment-copy { position: relative; z-index: 2; padding: clamp(24px, 5vw, 56px); max-width: 38rem; }
+    .moment-copy h2 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); }
+    .moment-copy p { color: var(--ink-2); margin: 16px 0 0; }
+    .notif {
+      position: absolute; z-index: 2; top: clamp(20px, 5vw, 48px); right: clamp(16px, 5vw, 48px);
+      width: min(360px, calc(100% - 32px)); padding: 14px 16px; border-radius: 20px;
+      background: rgba(30, 32, 40, 0.72); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      display: grid; grid-template-columns: 38px 1fr; gap: 12px; font-size: 0.86rem; line-height: 1.4;
+      transform: translateY(-20px) scale(0.96); opacity: 0; transition: all 0.8s var(--ease) 0.5s;
+    }
+    .in .notif { transform: none; opacity: 1; }
+    .notif .ic { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #e5e7eb, #9ca3af); display: grid; place-items: center; }
+    .notif .ic svg { width: 22px; height: 22px; }
+    .notif b { display: flex; justify-content: space-between; font-weight: 600; }
+    .notif b span { color: var(--muted); font-weight: 400; font-size: 0.78rem; }
+    .notif p { margin: 2px 0 0; color: var(--ink-2); }
+
+    /* ── Rent math ───────────────────────── */
+    .rent { padding: clamp(60px, 10vw, 140px) 0; }
+    .rent-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px, 6vw, 80px); align-items: center; }
+    .big-number { font-family: var(--body); font-weight: 700; font-size: clamp(3.6rem, 9vw, 7.4rem); line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+    .rent .lede { margin-top: 20px; }
+    .footnote { font-size: 0.78rem; color: var(--muted); margin-top: 18px; }
+    .chart { background: var(--bg-2); border: 1px solid var(--line); border-radius: 28px; padding: clamp(22px, 4vw, 36px); }
+    .chart-title { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-bottom: 26px; gap: 12px; flex-wrap: wrap; }
+    .legend { display: flex; gap: 16px; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; }
+    .bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 3vw, 28px); height: 280px; }
+    .bar-col { display: flex; flex-direction: column; align-items: center; height: 100%; gap: 8px; }
+    .bar-pair { display: flex; gap: 6px; align-items: flex-end; flex: 1; width: 100%; justify-content: center; }
+    .bar { width: min(34px, 40%); border-radius: 8px 8px 3px 3px; height: 0; transition: height 1.4s var(--ease); }
+    .bar.cloud { background: linear-gradient(180deg, #ff8f6b, #c9573b); }
+    .bar.home { background: var(--grad); height: 3px; }
+    .bar-val { font-size: 0.8rem; font-weight: 600; color: #ffb49c; opacity: 0; transition: opacity 0.6s 1s; font-variant-numeric: tabular-nums; }
+    .in .bar-val { opacity: 1; }
+    .bar-lbl { font-size: 0.8rem; color: var(--muted); }
+    @media (max-width: 860px) { .rent-grid { grid-template-columns: 1fr; } }
+
+    /* ── Bring it home (diagram) ─────────── */
+    .home-sec { padding: clamp(80px, 12vw, 160px) 0; text-align: center; overflow: hidden; }
+    .home-sec .lede { margin: 22px auto 0; }
+    .diagram { margin: 56px auto 0; max-width: 900px; }
+    .diagram svg { width: 100%; height: auto; overflow: visible; }
+    .flow { stroke-dasharray: 4 10; animation: flow 1.6s linear infinite; }
+    @keyframes flow { to { stroke-dashoffset: -28; } }
+    .pulse { animation: pulse 2.8s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+    @keyframes pulse { 0%, 100% { opacity: 0.35; transform: scale(0.92); } 50% { opacity: 0.9; transform: scale(1.06); } }
+    .diagram text { font-family: var(--body); fill: var(--ink-2); font-size: 15px; }
+    .diagram .t-strong { fill: var(--ink); font-weight: 600; font-size: 17px; }
+    .diagram .t-dim { fill: var(--muted); font-size: 13px; }
+
+    /* ── Real app showcase ───────────────── */
+    .showcase { padding: clamp(40px, 8vw, 100px) 0 clamp(60px, 10vw, 140px); overflow: hidden; }
+    .showcase header { text-align: center; }
+    .showcase header .lede { margin: 18px auto 0; }
+    .shots {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(16px, 2.4vw, 32px);
+      margin-top: 64px; align-items: start;
+    }
+    .shot { margin: 0; }
+    .shot:nth-child(even) { margin-top: 56px; }
+    .shot-frame {
+      border-radius: 36px; padding: 8px; background: linear-gradient(160deg, #2a2f3c, #0e1118 60%);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 90px rgba(0, 0, 0, 0.6);
+      transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease);
+    }
+    .shot:hover .shot-frame { transform: translateY(-6px); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 50px 100px rgba(0, 0, 0, 0.7), 0 0 80px rgba(74, 144, 226, 0.2); }
+    .shot-frame img { width: 100%; height: auto; aspect-ratio: 540 / 1192; border-radius: 28px; background: #0a0c12; }
+    .shot figcaption { margin-top: 20px; text-align: center; }
+    .shot figcaption b { display: block; font-family: var(--display); font-size: 1.1rem; font-weight: 700; }
+    .shot figcaption span { display: block; color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+    .shots-note { text-align: center; color: var(--muted); font-size: 0.78rem; margin-top: 40px; }
+    @media (max-width: 860px) {
+      .shots {
+        display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 16px;
+        margin: 48px calc(-1 * var(--gutter)) 0; padding: 0 var(--gutter) 24px; scrollbar-width: none;
+      }
+      .shots::-webkit-scrollbar { display: none; }
+      .shot { flex: 0 0 min(64vw, 260px); scroll-snap-align: center; }
+      .shot:nth-child(even) { margin-top: 0; }
+    }
+
+    /* ── Features bento ──────────────────── */
+    .features { padding: clamp(60px, 10vw, 140px) 0; }
+    .features header { max-width: 44rem; margin-bottom: 48px; }
+    .features header .lede { margin-top: 18px; }
+    .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
+    .card {
+      position: relative; background: var(--bg-2); border: 1px solid var(--line); border-radius: 28px;
+      padding: clamp(22px, 3vw, 32px); overflow: hidden; min-height: 280px;
+      transition: border-color 0.4s, transform 0.5s var(--ease), opacity 1s var(--ease);
+    }
+    .card:hover { border-color: var(--line-2); }
+    .card p { color: var(--ink-2); margin: 10px 0 0; font-size: 0.97rem; max-width: 30rem; }
+    .card .tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .c-gallery { grid-column: span 4; grid-row: span 2; display: flex; flex-direction: column; }
+    .c-watch, .c-listen, .c-files, .c-vault, .c-family { grid-column: span 2; }
+    .c-away, .c-backup { grid-column: span 3; min-height: 0; }
+    @media (max-width: 960px) {
+      .c-gallery { grid-column: span 6; }
+      .c-watch, .c-listen, .c-files, .c-vault, .c-family, .c-away, .c-backup { grid-column: span 3; }
+      .c-family { grid-column: span 6; }
+    }
+    @media (max-width: 620px) { .bento > .card { grid-column: span 6; } }
+    .mosaic { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(4, 1fr); grid-auto-rows: clamp(80px, 11vw, 140px); gap: 8px; margin-top: 26px; flex: 1; }
+    .mosaic img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+    .mosaic .tall { grid-row: span 2; }
+    .mosaic .wide { grid-column: span 2; }
+    .posters { display: flex; gap: 10px; margin-top: 22px; }
+    .poster { flex: 1; aspect-ratio: 2 / 3; border-radius: 10px; position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 8px; font-family: var(--display); font-weight: 700; font-size: 0.72rem; line-height: 1.1; }
+    .poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,0.75)); }
+    .poster span { position: relative; z-index: 1; }
+    .play { position: absolute; z-index: 2; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.92); display: grid; place-items: center; }
+    .wave { display: flex; align-items: center; gap: 4px; height: 90px; margin-top: 30px; }
+    .wave i { flex: 1; border-radius: 4px; background: var(--grad); background-size: 2800% 100%; animation: wave 1.3s ease-in-out infinite; }
+    @keyframes wave { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+    .now-playing { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-top: 14px; }
+    .docs { position: relative; height: 116px; margin-top: 26px; }
+    .doc { position: absolute; width: 86px; height: 108px; border-radius: 10px; background: #1b2030; border: 1px solid var(--line-2); padding: 14px 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+    .doc i { display: block; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.14); margin-bottom: 7px; }
+    .doc i:first-child { width: 60%; background: var(--teal); opacity: 0.85; }
+    .doc:nth-child(1) { left: 0; transform: rotate(-8deg); }
+    .doc:nth-child(2) { left: 64px; transform: rotate(2deg); top: -4px; }
+    .doc:nth-child(2) i:first-child { background: var(--violet); }
+    .doc:nth-child(3) { left: 128px; transform: rotate(10deg); }
+    .doc:nth-child(3) i:first-child { background: var(--blue); }
+    .vault-vis { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+    .lock { flex: 0 0 56px; height: 56px; position: relative; }
+    .lock::before { content: ""; position: absolute; inset: -22px; background: radial-gradient(closest-side, rgba(63, 214, 198, 0.4), transparent); animation: pulse 3s ease-in-out infinite; }
+    .lock svg { position: relative; width: 100%; height: 100%; }
+    .cipher { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.74rem; color: var(--muted); word-break: break-all; line-height: 1.5; }
+    .avatars { display: flex; margin-top: 26px; }
+    .avatars img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg-2); margin-left: -14px; }
+    .avatars img:first-child { margin-left: 0; }
+    .avatars .more { width: 58px; height: 58px; border-radius: 50%; margin-left: -14px; border: 3px solid var(--bg-2); background: var(--surface); display: grid; place-items: center; font-weight: 600; font-size: 0.9rem; color: var(--ink-2); }
+    .card-row { display: flex; gap: 22px; align-items: center; }
+    .card-row .ico { flex: 0 0 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; background: rgba(74, 144, 226, 0.12); border: 1px solid rgba(74, 144, 226, 0.25); }
+    .card-row .ico svg { width: 30px; height: 30px; }
+    @media (max-width: 480px) { .card-row { flex-direction: column; align-items: flex-start; } }
+
+    /* ── Privacy promises ────────────────── */
+    .privacy { padding: clamp(60px, 10vw, 140px) 0; }
+    .privacy-inner {
+      border-radius: 36px; padding: clamp(28px, 6vw, 80px); position: relative; overflow: hidden;
+      background: radial-gradient(80% 80% at 100% 0%, rgba(123, 111, 227, 0.18), transparent 60%), radial-gradient(70% 90% at 0% 100%, rgba(63, 214, 198, 0.14), transparent 60%), var(--bg-2);
+      border: 1px solid var(--line);
+    }
+    .promises { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 4vw, 48px); margin-top: 56px; }
+    .promise .num { font-family: var(--body); font-weight: 700; font-size: 4rem; line-height: 1; letter-spacing: -0.04em; display: inline-block; }
+    .promise h3 { margin-top: 14px; }
+    .promise p { color: var(--ink-2); font-size: 0.97rem; margin: 10px 0 0; }
+    .beta-note { margin: 48px 0 0; padding-top: 24px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); max-width: 52rem; }
+    @media (max-width: 860px) { .promises { grid-template-columns: 1fr; } }
+
+    /* ── Steps ───────────────────────────── */
+    .steps { padding: clamp(60px, 10vw, 140px) 0; }
+    .steps header { text-align: center; }
+    .steps header .lede { margin: 18px auto 0; }
+    .step-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 56px; }
+    .step { border-radius: 28px; padding: 32px; background: var(--bg-2); border: 1px solid var(--line); }
+    .step .n { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--grad); color: #06121a; margin-bottom: 22px; }
+    .step p { color: var(--ink-2); font-size: 0.97rem; margin: 10px 0 0; }
+    .step .os { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+    .step .os span { font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--ink-2); }
+    @media (max-width: 860px) { .step-list { grid-template-columns: 1fr; } }
+
+    /* ── Compare ─────────────────────────── */
+    .compare { padding: clamp(40px, 8vw, 100px) 0; }
+    .compare h2 { text-align: center; }
+    .table { margin: 48px auto 0; max-width: 860px; border-radius: 28px; border: 1px solid var(--line); overflow: hidden; }
+    .row { display: grid; grid-template-columns: 1.3fr 1fr 1fr; }
+    .row > div { padding: 18px clamp(12px, 3vw, 28px); border-top: 1px solid var(--line); font-size: 0.95rem; }
+    .row:first-child > div { border-top: 0; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.04em; color: var(--muted); background: var(--bg-2); }
+    .row > div:first-child { color: var(--ink-2); }
+    .row > div:last-child { background: rgba(63, 214, 198, 0.05); color: var(--ink); font-weight: 500; }
+    .row:first-child > div:last-child { color: var(--teal); background: rgba(63, 214, 198, 0.08); }
+    .row .no { color: #ff9f86; }
+    @media (max-width: 560px) { .row > div { font-size: 0.82rem; } }
+
+    /* ── Final CTA ───────────────────────── */
+    .final { padding: clamp(100px, 16vw, 200px) 0 clamp(80px, 12vw, 140px); text-align: center; overflow: hidden; }
+    .final::before {
+      content: ""; position: absolute; left: 50%; top: 50%; width: 900px; height: 600px; transform: translate(-50%, -45%);
+      background: radial-gradient(closest-side, rgba(74, 144, 226, 0.22), transparent); pointer-events: none;
+    }
+    .final-photos { display: flex; justify-content: center; margin-bottom: 44px; position: relative; }
+    .final-photos img { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg); margin-left: -18px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .final-photos img:first-child { margin-left: 0; }
+    .final h2 { font-size: clamp(2.6rem, 7vw, 5.6rem); position: relative; }
+    .final .lede { margin: 22px auto 0; position: relative; }
+    .cta-apple {
+      position: relative; display: inline-flex; align-items: center; gap: 10px; margin-top: 44px;
+      padding: 18px 38px; border-radius: 999px; font-size: 1.12rem; font-weight: 600; letter-spacing: -0.01em;
+      color: #fff; text-decoration: none; isolation: isolate;
+      background: linear-gradient(180deg, #4d9bf0 0%, #2f7de0 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 50px rgba(47, 125, 224, 0.45);
+      transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), filter 0.35s, opacity 1s var(--ease);
+    }
+    .cta-apple::before {
+      content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: -1;
+      background: var(--grad); filter: blur(18px); opacity: 0.55; transition: opacity 0.35s;
+    }
+    .cta-apple.in:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.4), 0 24px 70px rgba(47,125,224,0.6); }
+    .cta-apple:hover::before { opacity: 0.85; }
+    .cta-apple.in:active { transform: scale(0.98); }
+    .cta-apple svg { width: 18px; height: 18px; transition: transform 0.35s var(--ease); }
+    .cta-apple:hover svg { transform: translateX(3px); }
+    .cta-meta { margin-top: 22px; color: var(--muted); font-size: 0.88rem; position: relative; }
+    .cta-meta a { color: var(--ink-2); }
+
+    footer { border-top: 1px solid var(--line); padding: 36px 0 48px; font-size: 0.82rem; color: var(--muted); }
+    footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+    footer img { height: 20px; width: auto; }
+    footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
+    footer a { text-decoration: none; color: var(--ink-2); }
+    footer a:hover { color: var(--ink); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+      .story-text .w { color: var(--ink); }
+      .notif { opacity: 1; transform: none; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <img class="logo" src="assets/rah_wordmark_gradient.png" alt="root@home" width="1561" height="258">
-    <p>One household server on a Mac, PC, or Linux box you already leave on. Phase 1 beta: Android app + server installer. Your files stay on your hardware.</p>
-    <p>
-      <a class="btn" href="https://beta.rootathome.diy/download">Get beta access</a>
-    </p>
-    <p class="note">You need an invite code from the operator. iOS (TestFlight) comes in Phase 2 after we open the program to more households.</p>
-    <p><a class="quiet" href="/setup-guide/">Setup guide</a></p>
+
+  <header class="nav" id="nav">
+    <div class="wrap">
+      <a class="nav-logo" href="#top" aria-label="root@home, back to top"><img src="assets/rah_wordmark_gradient.png" alt="root@home" width="1561" height="258"></a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#story">Story</a>
+        <a href="#app">App</a>
+        <a href="#features">Features</a>
+        <a href="#privacy">Privacy</a>
+        <a href="/setup-guide/">Setup guide</a>
+        <a class="pill" href="https://beta.rootathome.diy/download">Get beta</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <img class="hero-logo reveal" src="assets/rah_wordmark_gradient.png" alt="root@home" width="1561" height="258">
+        <h1 class="reveal d1">Your family's memories belong <span class="grad-text">at home.</span></h1>
+        <p class="lede reveal d2">root@home turns a computer you already own into a private cloud for your family's photos, videos, movies, music and documents. Everything stays on your hardware, and you never pay a subscription to see your own files.</p>
+        <div class="hero-ctas reveal d3">
+          <a class="btn btn-primary" href="https://beta.rootathome.diy/download">Get beta access
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></a>
+          <a class="btn btn-ghost" href="#story">Why root@home</a>
+        </div>
+      </div>
+
+      <div class="hero-stage" aria-hidden="true">
+        <div class="polaroid p1" data-depth="0.12"><img src="assets/photos/family-11.webp" alt=""></div>
+        <div class="polaroid p2" data-depth="0.22"><img src="assets/photos/family-02.webp" alt=""></div>
+        <div class="polaroid p3" data-depth="0.16"><img src="assets/photos/family-03.webp" alt=""></div>
+        <div class="polaroid p4" data-depth="0.26"><img src="assets/photos/family-12.webp" alt=""></div>
+
+        <div class="phone">
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="app-top">
+              <b>Gallery</b>
+              <small><i></i>Home · backing up 3 photos</small>
+            </div>
+            <div class="app-grid">
+              <div class="up" style="background-image:url(assets/photos/family-04.webp)"></div>
+              <div class="up" style="background-image:url(assets/photos/family-08.webp)"></div>
+              <div class="up" style="background-image:url(assets/photos/family-13.webp)"></div>
+              <div style="background-image:url(assets/photos/family-01.webp)"></div>
+              <div style="background-image:url(assets/photos/family-10.webp)"></div>
+              <div style="background-image:url(assets/photos/family-05.webp)"></div>
+              <div style="background-image:url(assets/photos/family-09.webp)"></div>
+              <div style="background-image:url(assets/photos/family-07.webp)"></div>
+              <div style="background-image:url(assets/photos/family-06.webp)"></div>
+              <div style="background-image:url(assets/photos/family-12.webp)"></div>
+              <div style="background-image:url(assets/photos/family-03.webp)"></div>
+              <div style="background-image:url(assets/photos/family-02.webp)"></div>
+              <div style="background-image:url(assets/photos/family-11.webp)"></div>
+              <div style="background-image:url(assets/photos/family-08.webp)"></div>
+              <div style="background-image:url(assets/photos/family-04.webp)"></div>
+            </div>
+            <div class="app-tabs">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>Home</span>
+              <span class="on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Gallery</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z" fill="currentColor"/></svg>Watch</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Listen</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6a1 1 0 011-1h5l2 2h9a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1z"/></svg>Files</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-fade"></div>
+      </div>
+    </section>
+
+    <!-- STORY -->
+    <section class="story" id="story">
+      <div class="wrap">
+        <p class="eyebrow reveal">The story</p>
+        <p class="story-text" data-words>
+          Somewhere along the way, we stopped keeping our own memories. First steps. Birthday candles. Grandma's handwriting on a recipe card. [Twenty thousand moments] now live on someone else's computer, and every month [we pay rent] to see them.
+        </p>
+      </div>
+    </section>
+
+    <!-- MOMENT -->
+    <section class="moment">
+      <div class="wrap">
+        <div class="moment-card reveal" id="moment">
+          <img src="assets/photos/family-05.webp" alt="A family standing together on a beach, looking out at the ocean" loading="lazy">
+          <div class="notif" role="img" aria-label="A phone notification reading: Storage full. Photos and videos are no longer backing up. Upgrade your plan to keep going.">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a5 5 0 01-.6-9.96A6 6 0 0118 9a4 4 0 01-1 7.9"/><path d="M12 12v7M9 16l3 3 3-3"/></svg></div>
+            <div>
+              <b>Storage full <span>now</span></b>
+              <p>Photos and videos are no longer backing up. Upgrade your plan to keep going.</p>
+            </div>
+          </div>
+          <div class="moment-copy">
+            <h2>You know this message.</h2>
+            <p>Your family's history hits a storage limit, and the only fix is a bigger plan at a higher price, with more of your life on servers you'll never see.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RENT MATH -->
+    <section class="rent">
+      <div class="wrap rent-grid">
+        <div class="reveal">
+          <p class="eyebrow">The math</p>
+          <div class="big-number"><span class="grad-text" data-count="2398">$0</span></div>
+          <p class="lede">That's twenty years of a 2&nbsp;TB cloud plan, and if you stop paying, you lose access to your own photos. root@home runs on a computer you already have. Your storage is whatever drive you plug in, and nobody can raise the price on your memories.</p>
+          <p class="footnote">Illustrative: a typical 2&nbsp;TB plan at $9.99/month, before tax and future price increases. Hardware you already own isn't counted.</p>
+        </div>
+        <div class="chart reveal d1" id="chart" role="img" aria-label="Chart of cumulative cost. A cloud plan costs about $120 after 1 year, $599 after 5, $1,199 after 10 and $2,398 after 20 years. root@home has no monthly fee.">
+          <div class="chart-title">
+            <span>What you pay to keep your photos</span>
+            <span class="legend"><span><i style="background:#ff8f6b"></i>Cloud plan</span><span><i style="background:var(--teal)"></i>root@home</span></span>
+          </div>
+          <div class="bars">
+            <div class="bar-col"><span class="bar-val">$120</span><div class="bar-pair"><div class="bar cloud" data-h="5"></div><div class="bar home"></div></div><span class="bar-lbl">1 yr</span></div>
+            <div class="bar-col"><span class="bar-val">$599</span><div class="bar-pair"><div class="bar cloud" data-h="25"></div><div class="bar home"></div></div><span class="bar-lbl">5 yrs</span></div>
+            <div class="bar-col"><span class="bar-val">$1,199</span><div class="bar-pair"><div class="bar cloud" data-h="50"></div><div class="bar home"></div></div><span class="bar-lbl">10 yrs</span></div>
+            <div class="bar-col"><span class="bar-val">$2,398</span><div class="bar-pair"><div class="bar cloud" data-h="100"></div><div class="bar home"></div></div><span class="bar-lbl">20 yrs</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BRING IT HOME -->
+    <section class="home-sec" id="how">
+      <div class="wrap">
+        <p class="eyebrow reveal">The idea</p>
+        <h2 class="reveal d1">Bring it <span class="grad-text">home.</span></h2>
+        <p class="lede reveal d2">root@home runs quietly on a Mac, Windows PC or Linux machine that stays on in your house. Every phone, laptop and TV at home connects straight to it, so your photos travel across your own Wi&#8209;Fi instead of across the world.</p>
+
+        <div class="diagram reveal d2">
+          <svg viewBox="0 0 900 470" role="img" aria-label="Diagram: a home computer inside a house, connected to phones, laptops and a TV, with an encrypted direct link to a phone away from home. A crossed-out cloud shows no rented cloud is involved.">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stop-color="#3fd6c6"/><stop offset="0.5" stop-color="#4a90e2"/><stop offset="1" stop-color="#7b6fe3"/>
+              </linearGradient>
+              <radialGradient id="glow"><stop offset="0" stop-color="#4a90e2" stop-opacity="0.55"/><stop offset="1" stop-color="#4a90e2" stop-opacity="0"/></radialGradient>
+            </defs>
+            <!-- house -->
+            <path d="M120 200 L420 40 L720 200 V420 a14 14 0 0 1 -14 14 H134 a14 14 0 0 1 -14 -14 Z" fill="rgba(255,255,255,0.02)" stroke="url(#g)" stroke-width="2.5" stroke-linejoin="round"/>
+            <!-- glow + server -->
+            <circle class="pulse" cx="420" cy="230" r="120" fill="url(#glow)"/>
+            <rect x="370" y="180" width="100" height="80" rx="12" fill="#131723" stroke="url(#g)" stroke-width="2"/>
+            <rect x="385" y="197" width="70" height="8" rx="4" fill="#3fd6c6" opacity="0.85"/>
+            <rect x="385" y="213" width="50" height="6" rx="3" fill="#ffffff" opacity="0.18"/>
+            <rect x="385" y="227" width="60" height="6" rx="3" fill="#ffffff" opacity="0.18"/>
+            <circle cx="452" cy="245" r="4" fill="#3dd68c"/>
+            <text x="420" y="160" text-anchor="middle" class="t-strong">Home</text>
+
+            <!-- links -->
+            <path class="flow" d="M370 225 C300 225 250 300 215 330" fill="none" stroke="url(#g)" stroke-width="2.5" stroke-linecap="round"/>
+            <path class="flow" d="M420 260 L420 345" fill="none" stroke="url(#g)" stroke-width="2.5" stroke-linecap="round"/>
+            <path class="flow" d="M470 225 C540 225 590 300 625 330" fill="none" stroke="url(#g)" stroke-width="2.5" stroke-linecap="round"/>
+
+            <!-- phone -->
+            <rect x="180" y="330" width="40" height="70" rx="8" fill="#131723" stroke="#c3c9d6" stroke-width="2"/>
+            <rect x="186" y="338" width="28" height="48" rx="3" fill="#4a90e2" opacity="0.35"/>
+            <text x="200" y="422" text-anchor="middle">Phones</text>
+            <!-- laptop -->
+            <rect x="385" y="350" width="70" height="44" rx="5" fill="#131723" stroke="#c3c9d6" stroke-width="2"/>
+            <rect x="392" y="357" width="56" height="30" rx="2" fill="#7b6fe3" opacity="0.3"/>
+            <path d="M372 399 H468" stroke="#c3c9d6" stroke-width="3" stroke-linecap="round"/>
+            <text x="420" y="422" text-anchor="middle">Laptops</text>
+            <!-- tv -->
+            <rect x="600" y="332" width="84" height="54" rx="6" fill="#131723" stroke="#c3c9d6" stroke-width="2"/>
+            <rect x="607" y="339" width="70" height="40" rx="2" fill="#3fd6c6" opacity="0.25"/>
+            <path d="M628 397 H656" stroke="#c3c9d6" stroke-width="3" stroke-linecap="round"/>
+            <text x="642" y="422" text-anchor="middle">TV</text>
+
+            <!-- away link -->
+            <path class="flow" d="M650 165 C720 130 770 110 820 100" fill="none" stroke="#3fd6c6" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+            <rect x="822" y="62" width="36" height="64" rx="8" fill="#131723" stroke="#c3c9d6" stroke-width="2"/>
+            <path d="M834 90 v-5 a6 6 0 0 1 12 0 v5" fill="none" stroke="#3fd6c6" stroke-width="2"/>
+            <rect x="831" y="90" width="18" height="14" rx="3" fill="#3fd6c6"/>
+            <text x="840" y="150" text-anchor="middle" font-size="13">Away from home</text>
+            <text x="840" y="168" text-anchor="middle" class="t-dim">encrypted · direct</text>
+
+            <!-- crossed-out cloud -->
+            <g opacity="0.6">
+              <path d="M62 112 a24 24 0 0 1 6 -47 a32 32 0 0 1 60 -8 a22 22 0 0 1 14 55 z" fill="none" stroke="#8a92a6" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M52 44 L152 124" stroke="#ff8f6b" stroke-width="2.5" stroke-linecap="round"/>
+              <text x="100" y="150" text-anchor="middle" class="t-dim">no rented cloud</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- REAL APP -->
+    <section class="showcase" id="app">
+      <div class="wrap">
+        <header>
+          <p class="eyebrow reveal">The app</p>
+          <h2 class="reveal d1">The real thing, <span class="grad-text">running at home.</span></h2>
+          <p class="lede reveal d2">These are real screens from the beta app, served from a computer at home over plain Wi&#8209;Fi.</p>
+        </header>
+        <div class="shots">
+          <figure class="shot reveal">
+            <div class="shot-frame"><img src="assets/app/home.webp" alt="root@home Home tab showing pinned items, Continue watching, On this day and Recently added" width="540" height="1192" loading="lazy"></div>
+            <figcaption><b>Home</b><span>Pick up where you left off</span></figcaption>
+          </figure>
+          <figure class="shot reveal d1">
+            <div class="shot-frame"><img src="assets/app/watch.webp" alt="root@home Watch tab with All, TV and Movies filters, Continue watching and Franchises" width="540" height="1192" loading="lazy"></div>
+            <figcaption><b>Watch</b><span>Movies and shows, sorted for you</span></figcaption>
+          </figure>
+          <figure class="shot reveal d2">
+            <div class="shot-frame"><img src="assets/app/vault.webp" alt="root@home Hidden Vault screen, locked, with an Unlock with PIN button" width="540" height="1192" loading="lazy"></div>
+            <figcaption><b>Hidden Vault</b><span>Private lists behind a PIN</span></figcaption>
+          </figure>
+          <figure class="shot reveal d3">
+            <div class="shot-frame"><img src="assets/app/chat.webp" alt="root@home household Chat screen listing family members" width="540" height="1192" loading="lazy"></div>
+            <figcaption><b>Chat</b><span>Message the household, privately</span></figcaption>
+          </figure>
+        </div>
+        <p class="shots-note">Real beta screenshots. Movie and album artwork blurred.</p>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features">
+      <div class="wrap">
+        <header>
+          <p class="eyebrow reveal">Everything your family keeps</p>
+          <h2 class="reveal d1">One home for <span class="grad-text">all of it.</span></h2>
+          <p class="lede reveal d2">Photos from every phone, the movie shelf, the music library, and the paperwork you can never find. Everyone in the house gets their own space.</p>
+        </header>
+
+        <div class="bento">
+          <article class="card c-gallery reveal">
+            <div class="tag">Gallery</div>
+            <h3>Every photo from every phone, backed up automatically.</h3>
+            <p>Turn on backup once and new photos and videos go straight home over your Wi&#8209;Fi, in full quality. The only storage limit is the drive you choose.</p>
+            <div class="mosaic">
+              <img class="tall" src="assets/photos/family-08.webp" alt="" loading="lazy">
+              <img class="wide" src="assets/photos/family-07.webp" alt="" loading="lazy">
+              <img src="assets/photos/family-13.webp" alt="" loading="lazy">
+              <img class="tall" src="assets/photos/family-09.webp" alt="" loading="lazy">
+              <img src="assets/photos/family-01.webp" alt="" loading="lazy">
+              <img class="wide" src="assets/photos/family-10.webp" alt="" loading="lazy">
+              <img src="assets/photos/family-06.webp" alt="" loading="lazy">
+              <img src="assets/photos/family-04.webp" alt="" loading="lazy">
+            </div>
+          </article>
+
+          <article class="card c-watch reveal d1">
+            <div class="tag">Watch</div>
+            <h3>Movies, shows and home videos.</h3>
+            <p>Stream your collection to any screen in the house.</p>
+            <div class="posters" aria-hidden="true">
+              <div class="poster"><img src="assets/photos/family-03.webp" alt="" loading="lazy"><span>Summer '24</span></div>
+              <div class="poster"><img src="assets/photos/family-11.webp" alt="" loading="lazy"><div class="play"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 1.5l7 4.5-7 4.5z" fill="#07080c"/></svg></div><span>First steps</span></div>
+              <div class="poster"><img src="assets/photos/family-12.webp" alt="" loading="lazy"><span>The wedding</span></div>
+            </div>
+          </article>
+
+          <article class="card c-listen reveal d2">
+            <div class="tag">Listen</div>
+            <h3>Your whole music library, in one place.</h3>
+            <div class="wave" aria-hidden="true" data-wave></div>
+            <div class="now-playing" aria-hidden="true"><span>Road trip mix</span><span>2:14 / 3:48</span></div>
+          </article>
+
+          <article class="card c-files reveal">
+            <div class="tag">Files</div>
+            <h3>The family paperwork.</h3>
+            <p>Passports, report cards, tax returns and recipes, organized and kept at home.</p>
+            <div class="docs" aria-hidden="true">
+              <div class="doc"><i></i><i></i><i></i><i style="width:70%"></i></div>
+              <div class="doc"><i></i><i></i><i style="width:80%"></i><i></i></div>
+              <div class="doc"><i></i><i style="width:60%"></i><i></i><i></i></div>
+            </div>
+          </article>
+
+          <article class="card c-vault reveal d1">
+            <div class="tag">Private vault</div>
+            <h3>Encrypted before it leaves your phone.</h3>
+            <p>Your vault is locked with keys only you hold. The server at home only ever stores ciphertext.</p>
+            <div class="vault-vis" aria-hidden="true">
+              <div class="lock"><svg viewBox="0 0 56 56" fill="none"><rect x="10" y="24" width="36" height="26" rx="7" fill="#131723" stroke="url(#lg)" stroke-width="2.5"/><path d="M18 24v-6a10 10 0 0 1 20 0v6" stroke="url(#lg)" stroke-width="2.5"/><circle cx="28" cy="36" r="3.5" fill="#3fd6c6"/><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#3fd6c6"/><stop offset="1" stop-color="#7b6fe3"/></linearGradient></defs></svg></div>
+              <div class="cipher" data-cipher>9f3a·c71e·04bd·e28f·5a61·b0d9·7c42·13fe</div>
+            </div>
+          </article>
+
+          <article class="card c-family reveal d2">
+            <div class="tag">Household</div>
+            <h3>An account for everyone.</h3>
+            <p>Each person gets their own library, and shared albums go to exactly who you choose.</p>
+            <div class="avatars" aria-hidden="true">
+              <img src="assets/photos/family-02.webp" alt="" loading="lazy">
+              <img src="assets/photos/family-06.webp" alt="" loading="lazy">
+              <img src="assets/photos/family-01.webp" alt="" loading="lazy">
+              <img src="assets/photos/family-10.webp" alt="" loading="lazy">
+              <span class="more">+2</span>
+            </div>
+          </article>
+
+          <article class="card c-away reveal">
+            <div class="card-row">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0114 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+              <div>
+                <h3>Away from home? Still yours.</h3>
+                <p>Turn on an encrypted, direct link from your phone back to your house, with no relay or middleman in between.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card c-backup reveal d1">
+            <div class="card-row">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#3fd6c6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></div>
+              <div>
+                <h3>Backups on a schedule.</h3>
+                <p>Copy everything to an external drive automatically, because one copy isn't a backup.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIVACY -->
+    <section class="privacy" id="privacy">
+      <div class="wrap">
+        <div class="privacy-inner">
+          <p class="eyebrow reveal">Private by design</p>
+          <h2 class="reveal d1">Nobody's watching.<br><span class="grad-text">Not even us.</span></h2>
+          <div class="promises">
+            <div class="promise reveal">
+              <div class="num grad-text">0</div>
+              <h3>copies on our servers</h3>
+              <p>We don't run a cloud that holds your files. Your photos live on your computer, in your house.</p>
+            </div>
+            <div class="promise reveal d1">
+              <div class="num grad-text">0</div>
+              <h3>ads, scans or AI training</h3>
+              <p>Nobody mines your family albums to sell ads or train models. It's your hardware, so you make the rules.</p>
+            </div>
+            <div class="promise reveal d2">
+              <div class="num grad-text">0</div>
+              <h3>monthly rent on memories</h3>
+              <p>No subscription stands between you and your own files. Your library lives on your drive, where it always stays.</p>
+            </div>
+          </div>
+          <p class="beta-note reveal">During the beta, the app and server send small anonymous health pings, such as app version, crash counts and free disk space, so we can fix problems early. They never include filenames, photos, messages or your name, and they stop when root@home leaves beta.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEPS -->
+    <section class="steps">
+      <div class="wrap">
+        <header>
+          <p class="eyebrow reveal">Setup</p>
+          <h2 class="reveal d1">Home in about <span class="grad-text">ten minutes.</span></h2>
+          <p class="lede reveal d2">You won't need the command line or any networking know-how.</p>
+        </header>
+        <div class="step-list">
+          <div class="step reveal">
+            <div class="n">1</div>
+            <h3>Install on a computer that stays on</h3>
+            <p>Run the installer. root@home starts with the computer and keeps running quietly in the background.</p>
+            <div class="os"><span>macOS</span><span>Windows</span><span>Linux</span></div>
+          </div>
+          <div class="step reveal d1">
+            <div class="n">2</div>
+            <h3>Scan to pair your phone</h3>
+            <p>Open the app, scan the QR code on your computer's screen, and your phone is connected to Home.</p>
+            <div class="os"><span>Android</span><span>iOS coming soon</span></div>
+          </div>
+          <div class="step reveal d2">
+            <div class="n">3</div>
+            <h3>Invite the family</h3>
+            <p>Add everyone in the household. Each person gets their own account, backup and vault.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARE -->
+    <section class="compare">
+      <div class="wrap">
+        <h2 class="reveal">Rent it, or <span class="grad-text">own it.</span></h2>
+        <div class="table reveal d1" role="table" aria-label="Cloud subscription compared with root@home">
+          <div class="row" role="row"><div role="columnheader"></div><div role="columnheader">Cloud subscription</div><div role="columnheader">root@home</div></div>
+          <div class="row" role="row"><div role="cell">Where your photos live</div><div role="cell">Their data center</div><div role="cell">Your house</div></div>
+          <div class="row" role="row"><div role="cell">Monthly fee to see them</div><div role="cell" class="no">Every month</div><div role="cell">None</div></div>
+          <div class="row" role="row"><div role="cell">Storage limit</div><div role="cell" class="no">Your plan's tier</div><div role="cell">Your drive</div></div>
+          <div class="row" role="row"><div role="cell">Who sets the price</div><div role="cell" class="no">They do</div><div role="cell">You do</div></div>
+          <div class="row" role="row"><div role="cell">Speed at home</div><div role="cell">Your internet plan</div><div role="cell">Your Wi&#8209;Fi</div></div>
+          <div class="row" role="row"><div role="cell">Private vault keys</div><div role="cell">Varies</div><div role="cell">Only you</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="final" id="beta">
+      <div class="wrap">
+        <div class="final-photos reveal" aria-hidden="true">
+          <img src="assets/photos/family-04.webp" alt="" loading="lazy">
+          <img src="assets/photos/family-02.webp" alt="" loading="lazy">
+          <img src="assets/photos/family-11.webp" alt="" loading="lazy">
+          <img src="assets/photos/family-08.webp" alt="" loading="lazy">
+          <img src="assets/photos/family-13.webp" alt="" loading="lazy">
+        </div>
+        <h2 class="reveal d1">Bring your memories<br><span class="grad-text">home.</span></h2>
+        <p class="lede reveal d2">root@home is in private beta with a small group of families. Get an invite code and set up your household today.</p>
+        <a class="cta-apple reveal d3" href="https://beta.rootathome.diy/download">
+          Get beta access
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
+        </a>
+        <p class="cta-meta reveal d3">Invite code required · Android app + Mac, Windows &amp; Linux server · <a href="/setup-guide/">Read the setup guide</a></p>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <div class="wrap">
+      <img src="assets/rah_wordmark_gradient.png" alt="root@home" width="1561" height="258">
+      <nav aria-label="Footer">
+        <a href="/setup-guide/">Setup guide</a>
+        <a href="https://beta.rootathome.diy/download">Beta access</a>
+        <a href="mailto:help@rootathome.diy">help@rootathome.diy</a>
+      </nav>
+      <span>© 2026 root@home · Photos from Unsplash</span>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Nav gets a background once the hero logo scrolls away.
+      const nav = document.getElementById("nav");
+      const onScrollNav = () => nav.classList.toggle("scrolled", window.scrollY > 120);
+
+      // Story words light up as you scroll. [brackets] mark highlighted phrases.
+      const story = document.querySelector("[data-words]");
+      const words = [];
+      if (story) {
+        const raw = story.textContent.trim().replace(/\s+/g, " ");
+        story.textContent = "";
+        let hl = false;
+        raw.split(" ").forEach((token) => {
+          if (token.startsWith("[")) { hl = true; token = token.slice(1); }
+          const end = token.includes("]");
+          token = token.replace("]", "");
+          const span = document.createElement("span");
+          span.className = "w" + (hl ? " hl" : "");
+          span.textContent = token;
+          story.append(span, " ");
+          words.push(span);
+          if (end) hl = false;
+        });
+      }
+      const litStory = () => {
+        if (!story) return;
+        const r = story.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const p = Math.min(1, Math.max(0, (vh * 0.8 - r.top) / (r.height + vh * 0.2)));
+        const n = Math.round(p * words.length);
+        words.forEach((w, i) => w.classList.toggle("lit", i < n));
+      };
+
+      // Hero photo parallax and a slow zoom on the moment photo.
+      const polaroids = [...document.querySelectorAll(".polaroid")];
+      const moment = document.getElementById("moment");
+      const momentImg = moment && moment.querySelector("img");
+      const parallax = () => {
+        const y = window.scrollY;
+        polaroids.forEach(p => p.style.setProperty("--py", (-y * parseFloat(p.dataset.depth)) + "px"));
+        if (momentImg) {
+          const r = moment.getBoundingClientRect();
+          const p = Math.min(1, Math.max(0, 1 - r.top / window.innerHeight));
+          momentImg.style.setProperty("--s", (1.12 - p * 0.12).toFixed(3));
+        }
+      };
+
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          onScrollNav();
+          litStory();
+          if (!reduced) parallax();
+          ticking = false;
+        });
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      onScroll();
+
+      const countUp = (el) => {
+        const target = +el.dataset.count;
+        if (reduced) { el.textContent = "$" + target.toLocaleString("en-US"); return; }
+        const t0 = performance.now(), dur = 1800;
+        const step = (t) => {
+          const k = Math.min(1, (t - t0) / dur);
+          const e = 1 - Math.pow(1 - k, 3);
+          el.textContent = "$" + Math.round(target * e).toLocaleString("en-US");
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const el = e.target;
+          el.classList.add("in");
+          el.querySelectorAll("[data-count]").forEach(countUp);
+          if (el.id === "chart") el.querySelectorAll(".bar.cloud").forEach(b => b.style.height = b.dataset.h + "%");
+          io.unobserve(el);
+        });
+      }, { threshold: 0.18, rootMargin: "0px 0px -40px 0px" });
+      document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+      const wave = document.querySelector("[data-wave]");
+      if (wave) {
+        for (let i = 0; i < 28; i++) {
+          const b = document.createElement("i");
+          b.style.height = (30 + Math.abs(Math.sin(i * 1.7)) * 70) + "%";
+          b.style.animationDelay = (-(i * 0.09) % 1.3) + "s";
+          b.style.backgroundPosition = (i / 27 * 100) + "% 0";
+          wave.appendChild(b);
+        }
+      }
+
+      const cipher = document.querySelector("[data-cipher]");
+      if (cipher && !reduced) {
+        const hex = "0123456789abcdef";
+        setInterval(() => {
+          cipher.textContent = Array.from({ length: 8 }, () =>
+            Array.from({ length: 4 }, () => hex[Math.random() * 16 | 0]).join("")).join("·");
+        }, 900);
+      }
+    })();
+  </script>
 </body>
 </html>
