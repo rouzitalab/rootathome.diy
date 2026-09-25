@@ -98,7 +98,9 @@
     .nav-links a:hover { color: var(--ink); }
     .nav-links .pill { color: #06121a; background: var(--ink); padding: 7px 16px; border-radius: 999px; font-weight: 600; }
     .nav-links .pill:hover { color: #06121a; background: #fff; }
-    @media (max-width: 720px) { .nav-links a:not(.pill) { display: none; } }
+    .nav-links .pill-ghost { color: var(--ink); border: 1px solid var(--teal); padding: 6px 15px; border-radius: 999px; font-weight: 600; }
+    .nav-links .pill-ghost:hover { background: rgba(63, 214, 198, 0.12); }
+    @media (max-width: 720px) { .nav-links { gap: 10px; } .nav-links a:not(.pill):not(.pill-ghost) { display: none; } }
 
     /* ── Hero ────────────────────────────── */
     .hero { padding: 120px 0 0; text-align: center; overflow: hidden; }
@@ -122,6 +124,36 @@
     .btn-ghost { color: var(--ink); border: 1px solid var(--line-2); }
     .btn-ghost:hover { background: rgba(255, 255, 255, 0.06); }
     .btn svg { width: 16px; height: 16px; }
+    .hero-hint { position: relative; margin: 22px auto 0; font-size: 0.92rem; color: var(--ink-2); max-width: 36rem; }
+    .hero-hint a { color: var(--teal); font-weight: 600; }
+
+    /* ── Setup guide callout ─────────────── */
+    .guide-callout {
+      margin: 40px auto 0; max-width: 860px; padding: clamp(22px, 4vw, 32px); border-radius: 24px; text-align: left;
+      display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
+      background: linear-gradient(var(--bg-2), var(--bg-2)) padding-box, var(--grad) border-box;
+      border: 1.5px solid transparent;
+    }
+    .guide-callout .txt { flex: 1 1 22rem; }
+    .guide-callout h3 { font-size: 1.2rem; }
+    .guide-callout p { margin: 8px 0 0; color: var(--ink-2); font-size: 0.97rem; }
+    .guide-callout .btn { flex: 0 0 auto; }
+    .req-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: rgba(63, 214, 198, 0.14); color: var(--teal); margin-bottom: 10px; }
+    .step.required { border-color: rgba(63, 214, 198, 0.45); }
+
+    /* ── Before-download modal ───────────── */
+    .gate { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; background: rgba(4, 5, 8, 0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .gate[hidden] { display: none; }
+    .gate-card { width: 100%; max-width: 30rem; max-height: calc(100vh - 32px); overflow-y: auto; border-radius: 24px; padding: clamp(22px, 5vw, 34px); background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+    .gate-card h2 { font-size: 1.6rem; }
+    .gate-card > p { color: var(--ink-2); font-size: 0.97rem; margin: 12px 0 0; }
+    .gate-list { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 12px; }
+    .gate-list li { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; background: var(--bg-2); border: 1px solid var(--line); }
+    .gate-list .n { flex: 0 0 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 0.9rem; background: var(--grad); color: #06121a; }
+    .gate-list b { display: block; color: var(--ink); }
+    .gate-list span { font-size: 0.9rem; color: var(--ink-2); }
+    .gate-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .gate-actions .btn { flex: 1 1 auto; justify-content: center; }
 
     .hero-stage { position: relative; height: clamp(520px, 64vw, 720px); margin-top: 72px; }
     .polaroid {
@@ -425,7 +457,7 @@
         <a href="#app">App</a>
         <a href="#features">Features</a>
         <a href="#privacy">Privacy</a>
-        <a href="/setup-guide/">Setup guide</a>
+        <a class="pill-ghost" href="/setup-guide/">Setup guide</a>
         <a class="pill" href="https://beta.rootathome.diy/download">Get beta</a>
       </nav>
     </div>
@@ -442,8 +474,9 @@
         <div class="hero-ctas reveal d3">
           <a class="btn btn-primary" href="https://beta.rootathome.diy/download">Get beta access
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></a>
-          <a class="btn btn-ghost" href="#story">Why root@home</a>
+          <a class="btn btn-ghost" href="/setup-guide/">Read the setup guide</a>
         </div>
+        <p class="hero-hint reveal d3">root@home has two parts: a <strong>server</strong> you install on a computer at home, and the <strong>app</strong> on your phone. The app needs the server to work. <a href="/setup-guide/">See how&nbsp;&rarr;</a></p>
       </div>
 
       <div class="hero-stage" aria-hidden="true">
@@ -776,10 +809,11 @@
           <p class="lede reveal d2">You won't need the command line or any networking know-how.</p>
         </header>
         <div class="step-list">
-          <div class="step reveal">
+          <div class="step required reveal">
             <div class="n">1</div>
-            <h3>Install on a computer that stays on</h3>
-            <p>Run the installer. root@home starts with the computer and keeps running quietly in the background.</p>
+            <span class="req-tag">Required · do this first</span>
+            <h3>Install the server on a computer that stays on</h3>
+            <p>This is Home. The phone app connects to it, so without the server the app has nothing to talk to. Run the installer and root@home starts with the computer and keeps running quietly in the background.</p>
             <div class="os"><span>macOS</span><span>Windows</span><span>Linux</span></div>
           </div>
           <div class="step reveal d1">
@@ -793,6 +827,14 @@
             <h3>Invite the family</h3>
             <p>Add everyone in the household. Each person gets their own account, backup and vault.</p>
           </div>
+        </div>
+        <div class="guide-callout reveal">
+          <div class="txt">
+            <h3>Follow the setup guide step by step</h3>
+            <p>Most install problems come from skipping a step, usually the server. The guide walks through both parts with screenshots, including the security warnings you'll see during the beta.</p>
+          </div>
+          <a class="btn btn-primary" href="/setup-guide/">Open the setup guide
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></a>
         </div>
       </div>
     </section>
@@ -829,10 +871,26 @@
           Get beta access
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
         </a>
-        <p class="cta-meta reveal d3">Invite code required · Android app + Mac, Windows &amp; Linux server · <a href="/setup-guide/">Read the setup guide</a></p>
+        <p class="cta-meta reveal d3">Invite code required · Install the <strong>server</strong> on a Mac, Windows or Linux computer, <strong>then</strong> the Android app · <a href="/setup-guide/">Read the setup guide first</a></p>
       </div>
     </section>
   </main>
+
+  <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title" hidden>
+    <div class="gate-card">
+      <h2 id="gate-title">Before you download</h2>
+      <p>root@home is two installs, and the phone app won't work until the server is running.</p>
+      <ol class="gate-list">
+        <li><span class="n">1</span><div><b>Server on a computer that stays on</b><span>Mac, Windows or Linux. Install this first.</span></div></li>
+        <li><span class="n">2</span><div><b>App on your phone</b><span>Android, on the same Wi&#8209;Fi as the server.</span></div></li>
+      </ol>
+      <p>The setup guide covers both, with screenshots. It takes about ten minutes.</p>
+      <div class="gate-actions">
+        <a class="btn btn-primary" href="/setup-guide/">Open the setup guide</a>
+        <a class="btn btn-ghost" id="gate-continue" href="https://beta.rootathome.diy/download">Continue to download</a>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <div class="wrap">
@@ -946,6 +1004,24 @@
           wave.appendChild(b);
         }
       }
+
+      // Download links open a reminder about the two installs first.
+      const gate = document.getElementById("gate");
+      const gateContinue = document.getElementById("gate-continue");
+      let lastFocus = null;
+      const closeGate = () => { gate.hidden = true; if (lastFocus) lastFocus.focus(); };
+      document.querySelectorAll('a[href="https://beta.rootathome.diy/download"]').forEach((a) => {
+        if (a === gateContinue) return;
+        a.addEventListener("click", (e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+          e.preventDefault();
+          lastFocus = a;
+          gate.hidden = false;
+          gate.querySelector(".btn-primary").focus();
+        });
+      });
+      gate.addEventListener("click", (e) => { if (e.target === gate) closeGate(); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !gate.hidden) closeGate(); });
 
       const cipher = document.querySelector("[data-cipher]");
       if (cipher && !reduced) {

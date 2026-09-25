@@ -62,6 +62,36 @@
     .top-link { font-size: 0.95rem; }
     .troubleshoot dt { color: #f4f1ea; font-weight: 650; margin-top: 16px; }
     .troubleshoot dd { margin: 4px 0 0; }
+    .overview {
+      margin: 28px 0 8px;
+      border: 1.5px solid #3fd6c6;
+      border-radius: 18px;
+      padding: 20px 22px;
+      background: rgba(63, 214, 198, 0.07);
+    }
+    .overview h2 { border: 0; margin: 0 0 6px; padding: 0; font-size: 1.25rem; }
+    .overview p { margin: 6px 0 0; color: #d8d3c8; }
+    .overview ol { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; }
+    .overview li { display: flex; gap: 12px; align-items: flex-start; background: #141414; border: 1px solid #262625; border-radius: 12px; padding: 12px 14px; color: #d8d3c8; }
+    .overview .n { flex: 0 0 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: #3fd6c6; color: #06121a; }
+    .overview li b { display: block; color: #f4f1ea; }
+    .tag {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(63, 214, 198, 0.16);
+      color: #3fd6c6;
+    }
+    .callout.warn {
+      background: rgba(255, 159, 134, 0.08);
+      border-color: rgba(255, 159, 134, 0.35);
+    }
     footer { margin-top: 64px; font-size: 0.9rem; color: #6f6a5f; }
   </style>
 </head>
@@ -71,6 +101,20 @@
     <h1>Setting up root@home</h1>
     <p class="lede">Everything your household needs for the beta: installing the server on a
       computer that stays on, and pairing your Android phone to it. About 10 minutes.</p>
+
+    <section class="overview" aria-labelledby="overview-title">
+      <h2 id="overview-title">You're installing two things</h2>
+      <p>The phone app is only a window into your <strong>server</strong>. It can't store or show
+        anything until the server is installed and running on a computer at home.</p>
+      <ol>
+        <li><span class="n">1</span><div><b>The server, on a computer that stays on</b>Mac, Windows or
+          Linux. Do this first (Part 1).</div></li>
+        <li><span class="n">2</span><div><b>The app, on your Android phone</b>Then install and pair it
+          to the server (Parts 2 and 3).</div></li>
+      </ol>
+      <p>Go through the parts <strong>in order</strong> and don't skip ahead. Most install problems
+        come from a skipped step.</p>
+    </section>
 
     <div class="req">
       <strong>You'll need:</strong>
@@ -82,7 +126,8 @@
       </ul>
     </div>
 
-    <h2>Part 1 — Install the server</h2>
+    <h2 id="part-1">Part 1 — Install the server <span class="tag">Required · first</span></h2>
+    <p>Do this on the <strong>computer</strong>, not the phone.</p>
 
     <h3>Get the installer</h3>
     <ol class="steps">
@@ -127,6 +172,9 @@
     </figure>
 
     <h2>Part 2 — Install the Android app</h2>
+    <p class="callout warn">Finished Part 1? You should have the setup page open on the computer,
+      showing a pairing QR code. If not, go back and install the server first. The app can't
+      connect to anything without it.</p>
     <p>On the phone, open <strong>rootathome.diy</strong> in a mobile browser, enter the same
       invite code, and choose <strong>Android app (APK)</strong>:</p>
     <figure>
@@ -201,6 +249,10 @@
 
     <h2>Troubleshooting</h2>
     <dl class="troubleshoot">
+      <dt>The app can't find a server, or I only installed the app.</dt>
+      <dd>The app needs the root@home server running on a computer at home. Go back to
+        <a href="#part-1">Part 1</a> and install it on a Mac, Windows or Linux computer first,
+        then pair the phone.</dd>
       <dt>Nothing shows up under "On this network."</dt>
       <dd>Some guest Wi-Fi and mesh routers isolate devices from each other, which blocks the
         discovery root@home relies on. Type the server's address directly (shown on the setup

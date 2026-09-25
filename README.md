@@ -1,6 +1,6 @@
 # rootathome.diy
 
-Coming-soon site for root@home — self-hosted household media.
+Marketing site and setup guide for root@home — self-hosted household media.
 
 Custom domain: `www.rootathome.diy` (see `CNAME`).
 
